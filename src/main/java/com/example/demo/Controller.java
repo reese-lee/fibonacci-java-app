@@ -1,10 +1,5 @@
 package com.example.demo;
 
-import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.common.AttributeKey;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.StatusCode;
-import io.opentelemetry.api.trace.Tracer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -20,9 +15,8 @@ import java.util.Map;
 @RestController
 public class Controller {
 
-  private static final Tracer TRACER = GlobalOpenTelemetry.getTracer(Controller.class.getName());
-  private static final AttributeKey<Long> ATTR_N = AttributeKey.longKey("fibonacci.n");
-  private static final AttributeKey<Long> ATTR_RESULT = AttributeKey.longKey("fibonacci.result");
+  // private static final AttributeKey<Long> ATTR_N = AttributeKey.longKey("fibonacci.n");
+  // private static final AttributeKey<Long> ATTR_RESULT = AttributeKey.longKey("fibonacci.result");
 
   @GetMapping(value = "/fibonacci")
   public Map<String, Object> ping(@RequestParam(required = true, name = "n") long n) {
@@ -35,20 +29,18 @@ public class Controller {
    * @param n must be >=1 and <= 90.
    */
   private long fibonacci(long n) {
-    var span = TRACER.spanBuilder("fibonacci").startSpan();
-    span.setAttribute(ATTR_N, n);
-    try (var scope = span.makeCurrent()) {
+    // var span = TRACER.spanBuilder("fibonacci").startSpan();
+    // span.setAttribute(ATTR_N, n);
+    try {
       if (n < 1 || n > 90) {
         throw new IllegalArgumentException("n must be 1 <= n <= 90.");
       }
 
       // Base cases
       if (n == 1) {
-        span.setAttribute(ATTR_RESULT, 1);
         return 1;
       }
       if (n == 2) {
-        span.setAttribute(ATTR_RESULT, 1);
         return 1;
       }
 
@@ -59,14 +51,11 @@ public class Controller {
         lastLast = last;
         last = cur;
       }
-      span.setAttribute(ATTR_RESULT, last);
       return last;
     } catch (IllegalArgumentException e) {
-      span.recordException(e)
-          .setStatus(StatusCode.ERROR, e.getMessage());
       throw e;
     } finally {
-      span.end();
+
     }
   }
 
@@ -79,7 +68,7 @@ public class Controller {
             HttpRequestMethodNotSupportedException.class
     })
     public ResponseEntity<Object> handleException(Exception e) {
-      Span.current().setStatus(StatusCode.ERROR, e.getMessage());
+      //Span.current().setStatus(StatusCode.ERROR, e.getMessage());
       return new ResponseEntity<>(Map.of("message", e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
