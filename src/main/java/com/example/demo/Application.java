@@ -14,9 +14,9 @@ public class Application {
     SpringApplication.run(Application.class, args);
   }
 
-  @Bean
-  public Filter webMvcTracingFilter() {
-    return SpringWebMvcTracing.create().newServletFilter();
-  }
+  // @Bean
+  // public Filter webMvcTracingFilter() {
+  //   return SpringWebMvcTracing.create().newServletFilter();
+  // }
 
 }

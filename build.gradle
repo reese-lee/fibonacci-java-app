@@ -27,10 +27,15 @@ repositories {
 }
 
 bootRun {
-    mainClass.set 'com.example.demo.Application'
+    // mainClass.set 'com.example.demo.Application',
+    jvmArgs =
+    [
+      "-javaagent:./newrelic/newrelic.jar"
+    ]
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
